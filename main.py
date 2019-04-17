@@ -30,11 +30,6 @@ def spectrereconstruction(spectre_amplitude, spectre_phase, fftsize):
     i = len(spectre_amplitude) - 1
     return spectre_amplitude[i] * np.cos(spectre_phase[i]) + 1j * spectre_amplitude[i] * np.sin(spectre_phase[i])
 
-def moyenne(spectre, moyenne):
-    for i in range(0, len(spectre)):
-        spectre[i] += moyenne[i]
-    return spectre
-
 def boucle_ola(signal, m, N):
     hamming = fenetrageHamming(N)
     tab_signal = np.empty(len(signal), dtype=float)

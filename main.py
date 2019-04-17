@@ -27,10 +27,9 @@ def spectreamplitude(spectre, fftsize) :
     return np.abs(spectre)
 
 def spectrereconstruction(spectre_amplitude, spectre_phase, fftsize):
-    spectre = []
-    for i in range(0, len(spectre_amplitude)):
-        spectre.append(spectre_amplitude[i] * np.cos(spectre_phase[i]) + 1j * spectre_amplitude[i] * np.sin(spectre_phase[i]))
-    plt.plot(np.transpose(spectre))
+    i = len(spectre_amplitude) - 1
+    return spectre_amplitude[i] * np.cos(spectre_phase[i]) + 1j * spectre_amplitude[i] * np.sin(spectre_phase[i])
+
 
 def boucle_ola(signal, m, N):
     hamming = fenetrageHamming(N)
@@ -40,6 +39,7 @@ def boucle_ola(signal, m, N):
     tabspectre = []
     tabphase = []
     spectre = []
+    reconstruction = []
     for i in range(0, len(signal) - N, m):
         signal_fen = signal[i:i+N] * hamming
         #INSERT HERE
@@ -47,6 +47,7 @@ def boucle_ola(signal, m, N):
         tabspectre.append(20 * spectreamplitude(spectre, 1024))
         tabphase.append(spectrephase(spectre, 1024))
 
+        reconstruction.append(spectrereconstruction(tabspectre, tabphase, 1024))
         signal_fen = FFT.ifft(spectre, 1024)
         signal_fen = np.real(spectre[0:N])
         #FIN INSERT
@@ -55,8 +56,7 @@ def boucle_ola(signal, m, N):
     for i in range(0, len(tab_signal)):
         if somme_hamming[i] > 1e-08:
             tab_signal[i] /= somme_hamming[i]
-
-    spectrereconstruction(tabspectre, tabphase, 1024)
+    plt.plot(np.transpose(reconstruction))
     return tab_signal
 
 

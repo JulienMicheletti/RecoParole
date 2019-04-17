@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import numpy.fft as FFT
 import sys
 import matplotlib.pyplot as plt
-import numpy.fft as FFT
 import math as math
 from scipy.io.wavfile import read
 
@@ -23,18 +23,20 @@ def fenetrageHamming(size):
 def spectrephase(spectre, fftsize):
     return np.angle(spectre)
 
-def spectreamplitude(spectre, fftsize) :
+def spectreamplitude(spectre, fftsize):
     return np.abs(spectre)
 
 def spectrereconstruction(spectre_amplitude, spectre_phase, fftsize):
     i = len(spectre_amplitude) - 1
     return spectre_amplitude[i] * np.cos(spectre_phase[i]) + 1j * spectre_amplitude[i] * np.sin(spectre_phase[i])
 
+
 def boucle_ola(signal, m, N):
     hamming = fenetrageHamming(N)
     tab_signal = np.empty(len(signal), dtype=float)
     somme_hamming = np.empty(len(signal), dtype=float)
     signal_fen = []
+    spectre = []
     tabspectre = []
     tabphase = []
     spectre = []
@@ -49,7 +51,7 @@ def boucle_ola(signal, m, N):
         if i < 5 :
             moyenne += spectre
         reconstruction.append(spectrereconstruction(tabspectre, tabphase, 1024))
-        signal_fen = FFT.ifft(spectre, 1024)
+        spectre = FFT.ifft(spectre, 1024)
         signal_fen = np.real(spectre[0:N])
         #FIN INSERT
         tab_signal[i:i+N] += signal_fen
@@ -61,9 +63,9 @@ def boucle_ola(signal, m, N):
     plt.plot(np.transpose(moyenne))
     return tab_signal
 
-
 if __name__ == "__main__":
-    data = read('bruit.wav')
+    filename = sys.argv[1]
+    data = read(filename)
     moyenne = np.mean(data[1])
     if moyenne != 0:
         for i in range(0, len(data[1])):
@@ -88,6 +90,7 @@ if __name__ == "__main__":
     plt.yticks([0, yborne+0.5])
 
     sig = boucle_ola(data[1], m, N)
+
     plt.subplot(3,1,3)
     plt.plot(sig)
     plt.show()

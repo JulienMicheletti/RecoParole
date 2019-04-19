@@ -27,9 +27,8 @@ def spectreamplitude(spectre, fftsize):
     return np.abs(spectre)
 
 def spectrereconstruction(spectre_amplitude, spectre_phase, fftsize):
-    #i = len(spectre_amplitude) - 1
     test = []
-    for i in range(0, len(spectre_amplitude)):
+    for i in range(0, fftsize):
         test.append(spectre_amplitude[i] * np.cos(spectre_phase[i]) + 1j * spectre_amplitude[i] * np.sin(spectre_phase[i]))
     return test
 
@@ -37,15 +36,14 @@ def soustractionspectrale(spectre_amplitude, moyenne):
     alpha = 2
     beta = 1
     gamma = 0
-    spectre_debruite = []
+    sous = []
     for i in range(0, len(spectre_amplitude)):
         diff = np.power(spectre_amplitude[i], alpha) - beta * np.power(moyenne[i], alpha)
         if  diff > 0:
-            spectre_debruite.append(np.power(diff, 1/alpha))
+            sous.append(np.power(np.power(spectre_amplitude[i], alpha) - beta * np.power(moyenne[i], alpha), 1/alpha))
         else:
-            spectre_debruite.append(gamma * moyenne[i])
-    diff = np.power(np.power(spectre_amplitude, alpha) - beta * np.power(moyenne, alpha), 1/alpha)
-    return diff
+            sous.append(gamma * moyenne[i])
+    return sous
 
 def boucle_ola(signal, m, N):
     hamming = fenetrageHamming(N)
@@ -58,7 +56,9 @@ def boucle_ola(signal, m, N):
     tabphase = []
     spectre = []
     spectre_debruite = []
+    s_amplitude = []
     reconstruction = []
+    reconstruction_spectre = []
     bruit = np.empty(1024, dtype=complex)
     moyenne = np.empty(1024, dtype=complex)
     compt_moyenne = 0
@@ -67,16 +67,16 @@ def boucle_ola(signal, m, N):
         #INSERT HERE
         spectre = FFT.fft(signal_fen, 1024)
         s_amplitude = spectreamplitude(spectre, 1024)
-        tabspectre.append(s_amplitude)
-        tabspectre_log.append(20 * np.log(s_amplitude))
-        tabphase.append(spectrephase(spectre, 1024))
+        tabphase = spectrephase(spectre, 1024)
+        tabspectre_log = 20 * np.log(s_amplitude)
+
         if compt_moyenne < 5 :
             bruit += spectre
             moyenne = bruit / (compt_moyenne + 1)
-        spectre_debruite.append(soustractionspectrale(s_amplitude, moyenne))
-        #reconstruction.append(spectrereconstruction(tabspectre, tabphase, 1024))
-        #reconstruction.append(spectrereconstruction(spectre_debruite, tabphase, 1024))
-        spectre = FFT.ifft(spectre, 1024)
+
+        spectre_debruite = soustractionspectrale(s_amplitude, moyenne)
+        reconstruction = spectrereconstruction(spectre_debruite, tabphase, 1024)
+        spectre = FFT.ifft(reconstruction, 1024)
         signal_fen = np.real(spectre[0:N])
         #FIN INSERT
         tab_signal[i:i+N] += signal_fen
@@ -85,7 +85,7 @@ def boucle_ola(signal, m, N):
     for i in range(0, len(tab_signal)):
         if somme_hamming[i] > 1e-08:
             tab_signal[i] /= somme_hamming[i]
-    plt.plot(spectre_debruite)
+    plt.plot(np.transpose(reconstruction))
     return tab_signal
 
 if __name__ == "__main__":

@@ -72,7 +72,7 @@ def boucle_ola(signal, m, N):
         tabspectre_log = 20 * np.log(s_amplitude)
 
         if compt_moyenne < 5 :
-            bruit += spectre
+            bruit += s_amplitude
             moyenne = bruit / (compt_moyenne + 1)
 
         spectre_debruite = soustractionspectrale(s_amplitude, moyenne)
@@ -87,7 +87,7 @@ def boucle_ola(signal, m, N):
     for i in range(0, len(tab_signal)):
         if somme_hamming[i] > 1e-08:
             tab_signal[i] /= somme_hamming[i]
-    plt.plot(np.transpose(tabphase))
+    plt.plot(np.transpose(spectre_debruite))
     return tab_signal
 
 if __name__ == "__main__":

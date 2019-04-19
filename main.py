@@ -7,6 +7,7 @@ import sys
 import matplotlib.pyplot as plt
 import math as math
 from scipy.io.wavfile import read
+from scipy.io.wavfile import write
 
 def get_sign(value):
     if value > 0:
@@ -76,6 +77,7 @@ def boucle_ola(signal, m, N):
 
         spectre_debruite = soustractionspectrale(s_amplitude, moyenne)
         reconstruction = spectrereconstruction(spectre_debruite, tabphase, 1024)
+
         spectre = FFT.ifft(reconstruction, 1024)
         signal_fen = np.real(spectre[0:N])
         #FIN INSERT
@@ -85,7 +87,7 @@ def boucle_ola(signal, m, N):
     for i in range(0, len(tab_signal)):
         if somme_hamming[i] > 1e-08:
             tab_signal[i] /= somme_hamming[i]
-    plt.plot(np.transpose(reconstruction))
+    plt.plot(np.transpose(tabphase))
     return tab_signal
 
 if __name__ == "__main__":
@@ -95,6 +97,7 @@ if __name__ == "__main__":
     if moyenne != 0:
         for i in range(0, len(data[1])):
             data[1][i] -= moyenne
+    fs = data[0]
     print("frequence echantillonnage", data[0])
     print("taille en echantillons", data[1].size)
     print("taille en ms", (data[1].size/data[0]) * 1000)
@@ -119,3 +122,5 @@ if __name__ == "__main__":
     plt.subplot(3,1,3)
     plt.plot(sig)
     plt.show()
+
+    write("resultat.wav", fs, np.int16(sig))

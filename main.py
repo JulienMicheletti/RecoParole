@@ -40,10 +40,12 @@ def soustractionspectrale(spectre_amplitude, moyenne):
     sous = []
     for i in range(0, len(spectre_amplitude)):
         diff = np.power(spectre_amplitude[i], alpha) - beta * np.power(moyenne[i], alpha)
-        if  diff > 0:
-            sous.append(np.power(np.power(spectre_amplitude[i], alpha) - beta * np.power(moyenne[i], alpha), 1/alpha))
+        if diff > 0:
+            #print(np.power(np.power(spectre_amplitude[i], alpha) - beta * np.power(moyenne[i], alpha), 0.5))
+            sous.append(np.power(np.power(spectre_amplitude[i], alpha) - beta * np.power(moyenne[i], alpha), 0.5))
         else:
             sous.append(gamma * moyenne[i])
+    #print(sous)
     return sous
 
 def boucle_ola(signal, m, N):
@@ -59,7 +61,6 @@ def boucle_ola(signal, m, N):
     spectre_debruite = []
     s_amplitude = []
     reconstruction = []
-    reconstruction_spectre = []
     bruit = np.empty(1024, dtype=complex)
     moyenne = np.empty(1024, dtype=complex)
     compt_moyenne = 0
@@ -87,7 +88,7 @@ def boucle_ola(signal, m, N):
     for i in range(0, len(tab_signal)):
         if somme_hamming[i] > 1e-08:
             tab_signal[i] /= somme_hamming[i]
-    plt.plot(np.transpose(spectre_debruite))
+    plt.plot(np.transpose(reconstruction))
     return tab_signal
 
 if __name__ == "__main__":

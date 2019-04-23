@@ -87,7 +87,6 @@ def boucle_ola(signal, m, N):
     for i in range(0, len(tab_signal)):
         if somme_hamming[i] > 1e-08:
             tab_signal[i] /= somme_hamming[i]
-    plt.plot(np.transpose(tab_signal))
     return tab_signal
 
 if __name__ == "__main__":
@@ -110,16 +109,9 @@ if __name__ == "__main__":
     plt.xticks(np.arange(0, data[1].size, step=data[1].size/10))
     plt.xlabel('Temps (echt)')
 
-    plt.subplot(3,1,2)
-    hamming = fenetrageHamming(N)
-    plt.plot(hamming)
-    ymin, ymax = plt.ylim()
-    yborne = max(np.abs(ymin), np.abs(ymax))
-    plt.yticks([0, yborne+0.5])
-
     sig = boucle_ola(data[1], m, N)
 
-    plt.subplot(3,1,3)
+    plt.subplot(3,1,2)
     plt.plot(sig)
     plt.show()
 

@@ -34,19 +34,17 @@ def spectrereconstruction(spectre_amplitude, spectre_phase, fftsize):
     return test
 
 def soustractionspectrale(spectre_amplitude, moyenne):
-    alpha = 2#4
-    beta = 1#10
+    alpha = 2
+    beta = 10
     gamma = 0
     sous = []
     for i in range(0, len(spectre_amplitude)):
         diff = np.power(spectre_amplitude[i], alpha) - beta * np.power(moyenne[i], alpha)
         if diff > 0:
-            #print(np.power(np.power(spectre_amplitude[i], alpha) - beta * np.power(moyenne[i], alpha), 0.5))
             sous.append(np.power(np.power(spectre_amplitude[i], alpha) - beta * np.power(moyenne[i], alpha), 1/float(alpha)))
 
         else:
             sous.append(gamma * moyenne[i])
-    #print(sous)
     return sous
 
 def boucle_ola(signal, m, N):
@@ -114,7 +112,7 @@ if __name__ == "__main__":
 
     plt.subplot(3,1,2)
     hamming = fenetrageHamming(N)
-    #plt.plot(hamming)
+    plt.plot(hamming)
     ymin, ymax = plt.ylim()
     yborne = max(np.abs(ymin), np.abs(ymax))
     plt.yticks([0, yborne+0.5])

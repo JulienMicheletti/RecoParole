@@ -104,14 +104,14 @@ if __name__ == "__main__":
     N = 32 * data[0] / 1000
 
     plt.figure(1, figsize=(10,10))
-    sigfig = plt.subplot(3,1,1)
+    sigfig = plt.subplot(2,1,1)
     plt.plot(data[1])
     plt.xticks(np.arange(0, data[1].size, step=data[1].size/10))
     plt.xlabel('Temps (echt)')
 
     sig = boucle_ola(data[1], m, N)
 
-    plt.subplot(3,1,2)
+    plt.subplot(2,1,2)
     plt.plot(sig)
     plt.show()
 
